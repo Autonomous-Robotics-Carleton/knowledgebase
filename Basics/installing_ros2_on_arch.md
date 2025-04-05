@@ -52,10 +52,42 @@ which colcon
 ```
 wait i guess that was it. thought it was going to be longer than that.
 
+
+## this is what you are going to need to do every time you create a new workspace
+
 from here im going to show you how to create a new ws. i like creating a new ws for every separate project i work on, but this is not necessary whatsoever.
 ```                                                 ─╯
 mkdir -p [nameofws]/src
+cd [name of ur ws]
 colcon build
 ```
  honestly man i already know its just one person going to be using this sanil just come talk to me if u get to this point
+
+
+theres sooo much more bro nvm
+
+
+
+# step 2
+## getting the source code.
+
+if you dont have vcs:
+`sudo pacman -S python-vcstool`
+ i ended up using yay to install  vcs, pacman didnt have it.
+
+in general if you need a tool:
+1. find it on pacman
+2. find it on yay
+3. depends on what it is lol, yay has most things.(we used pip to isntall python libraries)
+
+```
+wget https://raw.githubusercontent.com/ros2/ros2/foxy/ros2.repos
+vcs import src < ros2.repos
+```
+the vcs command will take a bit.
+
+next,
+
+
+
  
