@@ -86,7 +86,11 @@ vcs import src < ros2.repos
 ```
 the vcs command will take a bit.
 
-next,
+next, we need to get rosdep initialized, and have it resolve all dependancies for us. i promis we are almost done
+
+
+
+bro ros an arch sucks dont do this just use docker or distrobox
 
 
 
