@@ -1,215 +1,320 @@
-associated video: https://youtu.be/EU-QaO6xTv4
+# F1TENTH Tutorial T01: Docker and ROS 2
 
+Welcome to your first F1TENTH tutorial! This version includes embedded good coding habits, checklists, documentation links, upcoming visual demos, and now also outlines clear learning objectives, troubleshooting tips, and ROS 2 graph visualization guidance to support you as a beginner. This guide is built for first-year university students and assumes minimal experience with software development. It introduces two powerful tools used in robotics development: [Docker](https://docs.docker.com/) and [ROS 2](https://docs.ros.org/en/rolling/). You'll learn core concepts, how to apply them, and gain hands-on experience along the way.
 
-extremely important. will be going over the basis of how ROS2 works. also docker as well i guess. honestly this was meant to be only tutorial 1 but i think im going to have things  for lab 1 also in here.
-
-
-
----
-
-## 🐳 What is Docker (in plain English)?
-Docker is a **tool that makes it easy to package, run, and share applications** in a consistent way, across different machines.
-
-Imagine you’ve got an app that needs:
-- Python 3.11
-- A specific version of Linux
-- Some custom libraries
-- A database
-
-If you set that up on your machine, it might work great. But if someone else tries to run it on their laptop or a server — it might not work, because their setup is different.
-
-**Docker solves this.** It puts your app and *everything it needs to run* into one lightweight package, called a **container**. You can send this container to someone else, and it will run *exactly the same* on their machine.
+> ✅ **Good Habit Reminder**: Always look up official docs before using a command you're unfamiliar with. Bookmark [Docker](https://docs.docker.com/get-started/) and [ROS 2](https://docs.ros.org/en/rolling/) now!
 
 ---
 
-## 🧱 How is Docker Different from a Virtual Machine (VM)?
+## 1. Introduction to Docker for Robotics
 
-| Feature | Docker (Containers) | Virtual Machines |
-|--------|---------------------|------------------|
-| **System Overhead** | Very light (shares your OS kernel) | Heavy (each VM runs its own OS) |
-| **Startup Time** | Seconds | Minutes |
-| **Performance** | Near-native | Slower (more overhead) |
-| **Size** | Megabytes | Gigabytes |
-| **Isolation** | App-level | Full system-level |
-| **Use Case** | Running many small apps, dev/test, microservices | Full OS testing, running different OSes (e.g. Windows on Linux) |
+🎯 **Learning Objectives**
 
-**Analogy:**
-- A **VM** is like a full apartment building for one person — has its own walls, plumbing, electricity, etc.
-- A **Docker container** is like a room in a shared house — separated from others, but shares some stuff like the plumbing and power with the whole house.
+* Understand what Docker is and why it's useful in robotics
+* Identify key Docker concepts (images, containers, Dockerfiles)
+* Learn the benefits of using Docker for reproducibility and isolation
+
+### What is Docker?
+
+Imagine your laptop is a kitchen. Docker is like having a bunch of meal kits — everything you need to cook a specific meal (or run a software project) is packed neatly together. No missing ingredients, no mess.
+
+Docker allows you to package an application and all its dependencies into a **container**. This container can run on any computer with Docker installed, regardless of the operating system.
+
+> 📘 Learn more: [Docker Overview](https://docs.docker.com/get-started/overview/)
+
+### Why Use Docker in Robotics?
+
+* ✅ **Reproducibility**: Everyone on your team runs the same setup.
+* ✅ **Isolation**: No conflicts between projects.
+* ✅ **Portability**: Move between laptops, labs, or robots with no reinstallation.
+
+### Core Docker Concepts (with Visual Aid)
+
+```
++--------------------------+
+|         Image           | <-- Recipe for your container (like a blueprint)
++--------------------------+
+|         Dockerfile      | <-- Instructions to build the image
++--------------------------+
+|         Container        | <-- A running instance of the image
++--------------------------+
+```
+
+> 📘 Learn more: [Docker Images vs Containers](https://docs.docker.com/get-started/)
+
+### ✅ Good Habits Checklist
+
+* [ ] Use `Dockerfile` instead of installing software manually
+* [ ] Document what each command does using comments
+* [ ] Never hardcode credentials in Dockerfiles
+* [ ] Always mount volumes to avoid losing work
+
+🎥 **Coming Soon:** Visual terminal demo — *docker build and run*
 
 ---
 
-## 🚀 Why Use Docker Over VMs?
-Here’s why developers and companies love Docker:
+## 2. Getting Hands-On with Docker
 
-### 1. **Lightweight**
-You can run **lots of containers** on one machine. VMs eat a lot more memory and CPU.
+> 🎥 Visual: `docker run` in action *(Insert terminal recording GIF)*
 
-### 2. **Fast**
-Containers start almost instantly. VMs take a while to boot up.
+### Installation
 
-### 3. **Portable**
-A Docker container will run the same way on your laptop, your teammate’s laptop, or a cloud server — no "it works on my machine" issues.
+* [Install Docker for your OS](https://docs.docker.com/get-docker/)
 
-### 4. **Easier Dev & Deployment**
-You can:
-- Spin up an app and its database in one command.
-- Use Docker Compose to define multi-service apps.
-- Push images to Docker Hub and deploy anywhere.
+### Core Commands
 
----
-
-## 🧰 Applications: Running Linux Inside Windows
-
-### 1. **Using Docker to Run Linux Apps on Windows**
-Docker lets you run **Linux-based containers on a Windows machine**, thanks to a lightweight virtual machine under the hood (via WSL2 or Hyper-V). So even if your app needs Linux, you don’t need to dual-boot or install Linux manually.
-
-#### Example:
-Say you want to:
-- Run a Python Flask web server on Ubuntu
-- Use PostgreSQL (a Linux-native database)
-
-With Docker, you can:
 ```bash
-docker run -it ubuntu
+# Download an existing image from Docker Hub
+docker pull ubuntu
+
+# Build a custom image from a Dockerfile
+docker build -t my_image .
+
+# Run an interactive container
+docker run -it my_image
+
+# List running containers
+docker ps
+
+# Stop a container
+docker stop <container-id>
+
+# Remove a container
+docker rm <container-id>
 ```
-Boom — you're inside an Ubuntu container, running on Windows.
 
-You can even use `docker-compose.yml` to spin up both Flask and Postgres in one go. This is especially useful if you're building something that’ll eventually run on a Linux server (most servers are Linux!).
+> 📘 Learn more: [Docker CLI Reference](https://docs.docker.com/engine/reference/commandline/docker/)
 
----
-if you have a windows laptop, getting used to working in a docker container is going to be extremely useful. if you are on linux, you are lucky! those guys are just going to be simulating our environment lol.
+### ✅ Good Habits Checklist
 
-id reccomend sticking to the docker cli as much as possible to get used to all the wierd quirks, but docker desktop is a great tool(although using it is a crutch, kind of like using git cli vs github desktop)
-
----
-ALRIGHT! LETS LEARN ROS
-
-honestly the ros2 docs are pretty good, its what i used to learn: https://docs.ros.org/en/foxy/index.html
-theyve documented things really well there, and im not trying to replace the use of other docs, being able to navigate through docs of other tools really is a good skill to have. ill have an overview, but wont go too in depth.
-
----
-
-## 🤖 What is ROS 2?
-
-**ROS 2** is an **open-source framework** for building robot software.
-
-It’s not an operating system like Windows or Linux — despite the name — but more like a **collection of tools, libraries, and conventions** that help you write code to control robots.
-
-Think of it like:
-> 🧱 LEGO blocks for building robot brains
-
-It helps with things like:
-- Moving motors
-- Reading sensors
-- Talking between different parts of the robot
-- Controlling timing
-- Communicating across machines
+* [ ] Use `--rm` to clean up containers automatically when testing
+* [ ] Clean up regularly using `docker system prune`
+* [ ] Use `--name` to identify containers more easily
 
 ---
 
-## 🧠 Why ROS 2 Exists (vs ROS 1)
+## 3. ROS 2: Your Robot's Operating System
 
-ROS 1 was great for prototyping, but it had limitations:
-- Not real-time safe
-- Not multi-robot friendly
-- Harder to use across networks
-- Linux-only (mainly Ubuntu)
+🎯 **Learning Objectives**
 
-**ROS 2** fixed a lot of this:
-- Built on top of **DDS (Data Distribution Service)**, a professional pub-sub communication standard
-- Designed to be:
-  - **Real-time**
-  - **Multi-platform** (Linux, Windows, Mac)
-  - **More secure and reliable**
+* Grasp what ROS 2 is and how it enables modular robotics software
+* Understand key components like nodes, topics, and services
+* Know how data flows between different parts of a robotic system
+
+### What is ROS 2?
+
+ROS 2 (Robot Operating System 2) is a framework that helps different parts of a robot — like sensors, motors, and control systems — talk to each other.
+
+You can think of a robot as a team of people:
+
+* **Sensors** = the eyes and ears
+* **Motors** = the arms and legs
+* **Control Code** = the brain
+  ROS 2 is the language they use to coordinate.
+
+> 📘 Learn more: [ROS 2 Overview](https://docs.ros.org/en/rolling/index.html)
+
+### Key ROS 2 Concepts (with Diagram)
+
+```
++-------------+         +-------------+         +-------------+
+|  Sensor     |-------> |   Node A    |-------> |  Motor Cmd  |
+| (Camera)    | Topic   | (Talker)    | Topic   | (Listener)  |
++-------------+         +-------------+         +-------------+
+```
+
+| Concept    | Description                                                |
+| ---------- | ---------------------------------------------------------- |
+| Node       | A small program that performs one task                     |
+| Topic      | A stream of data (like sensor readings)                    |
+| Publisher  | A node that sends messages                                 |
+| Subscriber | A node that receives messages                              |
+| Service    | A request/response system between nodes                    |
+| Action     | A long-running task with feedback (e.g. driving to a goal) |
+| Parameter  | A tunable value inside a node                              |
+
+> 📘 Learn more: [Nodes, Topics, Services in ROS 2](https://docs.ros.org/en/rolling/Concepts.html)
+
+### ✅ Good Habits Checklist
+
+* [ ] Use launch files to manage nodes
+* [ ] Keep node logic modular and reusable
+* [ ] Use `ros2 topic list` and `ros2 topic echo` to debug
+* [ ] Comment your node scripts generously
+
+🎥 **Coming Soon:** Visual: Talker and listener node in action
 
 ---
 
-## 🧩 Key Concepts in ROS 2
+## 4. ROS 2 Workspaces and Package Structure
 
-Let’s go over the **basic building blocks**:
+🎯 **Learning Objectives**
 
-### 1. **Nodes**
-- A **node** is like a mini-program that does one thing.
-- Example: One node reads a camera; another drives the wheels.
+* Understand the structure of a ROS 2 workspace
+* Learn how to create and build packages inside a workspace
+* Build good workspace habits to avoid conflicts and confusion
 
-### 2. **Topics**
-- Nodes talk to each other using **topics**.
-- If Node A is a camera and publishes images on `/camera`, Node B can **subscribe** to `/camera` to process them.
+### What is a Workspace?
 
-🗣️ *It's like a radio station: one node broadcasts, another listens.*
+A workspace is a directory where you develop and organize your ROS 2 projects.
 
-### 3. **Messages**
-- Data sent over topics.
-- Pre-defined formats like `geometry_msgs/Twist` (for movement), or custom messages.
+### Directory Layout
 
-### 4. **Services**
-- For request/response style communication (like asking a robot arm to move to a certain position).
+```bash
+ros2_ws/        # Your main workspace
+├── src/        # Source code of your packages
+├── install/    # Install folder created by the build system
+├── build/      # Temporary build files
+├── log/        # Log files from the build
+```
 
-### 5. **Actions**
-- Like services, but for **long-running tasks** (e.g., "walk to this location").
+> 📘 Learn more: [Creating a ROS 2 Workspace](https://docs.ros.org/en/rolling/Tutorials/Beginner-Client-Libraries/Creating-A-Workspace/Creating-A-Workspace.html)
 
-### 6. **Launch Files**
-- Used to start up multiple nodes at once, with all their parameters.
+### ✅ Good Habits Checklist
+
+* [ ] Use one workspace per project to avoid clutter
+* [ ] Rebuild regularly (`colcon build`) after changes
+* [ ] Run `colcon clean` if packages act unexpectedly
+* [ ] Never add workspace sourcing to `.bashrc`
+
+🎥 **Coming Soon:** Visual: Workspace build from scratch
 
 ---
 
-## 🛠️ ROS 2 in Practice
+## 5. Creating and Understanding a ROS 2 Package
 
-Here’s what a simple robot system might look like in ROS 2:
+🎯 **Learning Objectives**
 
+* Learn to create a basic ROS 2 Python package
+* Understand the purpose of files like `package.xml` and `setup.py`
+* Write and run a simple ROS 2 node
+
+### Creating a Python Package
+
+```bash
+cd ~/ros2_ws/src
+ros2 pkg create --build-type ament_python my_package --dependencies rclpy std_msgs
 ```
-[Lidar Node] --(laser scan msgs)--> [Navigation Node] --(cmd_vel msgs)--> [Motor Driver Node]
-```
 
-Each piece is isolated and reusable. You can swap components without rewriting everything.
+> 📘 Learn more: [Creating ROS 2 Python Packages](https://docs.ros.org/en/rolling/Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Py-Publisher-And-Subscriber.html)
 
+### ✅ Good Habits Checklist
+
+* [ ] Use clear package and node names
+* [ ] Create separate files for publishers and subscribers
+* [ ] Use `entry_points` in `setup.py` for CLI access
+* [ ] Update `package.xml` with real descriptions
+
+🎥 **Coming Soon:** Visual: File structure breakdown + node run
 
 ---
 
+## 6. Building and Running Inside Docker
 
-ok. enough theory, lets get to getting stuff going on your laptop. this is getting into lab1. dont worry, not the answers.
+### Sample Dockerfile
 
-
-##  Overview
-The goal of this lab is to get you familiar with the ROS 2 workflow. You'll have the option to complete the coding segment of this assignment in either Python or C++. However, we highly recommend trying out both since this will be the easiest assignment to get started on a new language, and the workflow in these two languages are slightly different in ROS2 and it's beneficial to understand both.
-
-In this lab, it'll be helpful to read these tutorials if you're stuck:
-
-https://docs.ros.org/en/foxy/Tutorials.html
-
-https://roboticsbackend.com/category/ros2/
-
-
-## getting setup
-### (Native Ubuntu)
-Install ROS 2 following the instructions here: https://docs.ros.org/en/foxy/Installation.html.
-
-Next, create a workspace:
-```
-mkdir -p ~/lab1_ws/src
-cd lab1_ws
-colcon build
-```
-### Docker
-If you can't have Ubuntu installed natively, install Docker on your system following the instructions here: https://docs.docker.com/get-docker/. The documentation of Docker can be found here.
-
-Next, start a container with a bind mount to your workspace directory on your host system inside this repo by:
-
-```
-docker run -it -v <absolute_path_to_this_repo>/lab1_ws/src/:/lab1_ws/src/ --name f1tenth_lab1 ros:foxy
+```Dockerfile
+FROM ros:humble
+RUN apt update && apt install -y python3-colcon-common-extensions
+WORKDIR /ros2_ws
+COPY . /ros2_ws
+RUN . /opt/ros/humble/setup.sh && colcon build
+CMD ["bash"]
 ```
 
-This will create a workspace directory on the host at <absolute_path_to_this_repo>/lab1_ws/src. It'll create the container based on the official ROS 2 Foxy image, and give the container a name f1tenth_lab1. You'll then have access to a terminal inside the container.
+> 📘 Learn more: [Dockerizing ROS 2 Projects](https://docs.ros.org/en/rolling/How-To-Guides/Docker.html)
 
+### ✅ Good Habits Checklist
 
+* [ ] Add a `.dockerignore` file to keep images small
+* [ ] Re-tag and version your Docker builds
+* [ ] Push only working builds to Docker Hub
 
+🎥 **Coming Soon:** Visual: Docker build + colcon run demo
 
+---
 
+## 7. Final Assignment
 
+### Objective
 
+* Build a containerized ROS 2 workspace
+* Create a simple publisher node
+* Launch it using Python
+* Push your container to Docker Hub
+* Submit via GitHub Classroom
 
-honestly i dont see the point of just redoing the lab manual. im done writing for now.
+> ✅ **Track your changes:** Keep a `CHANGELOG.md` file from the start
 
+---
 
+## 8. Common Mistakes and Pro Tips
+
+| Mistake                         | Fix                                            |
+| ------------------------------- | ---------------------------------------------- |
+| Not sourcing the setup script   | Run `source install/setup.bash`                |
+| Permissions issue on volume     | Add `--user $(id -u):$(id -g)` to `docker run` |
+| Dependencies missing in package | Add to `package.xml` and `setup.py`            |
+
+✅ Use `tmux` to keep sessions alive
+✅ Use volumes to persist work
+✅ Don’t put ROS source commands in `.bashrc` — see [why here](https://docs.ros.org/en/rolling/How-To-Guides/Overriding-Environment-Variables.html)
+
+---
+
+## 9. Resources and What’s Next
+
+### 🔄 Troubleshooting Common ROS 2 Issues
+
+> 🛠️ **Colcon build fails with missing dependencies**
+> Check your `package.xml` and `setup.py` to ensure all dependencies are listed. Use `rosdep install --from-paths src --ignore-src -r -y` to auto-install missing ones.
+
+> 🛠️ **Can't find installed packages**
+> Make sure to `source install/setup.bash` after building. Never skip this step.
+
+> 🛠️ **Docker can't access local folder**
+> Ensure you're using absolute paths with `-v` or `--mount`, and check permissions.
+
+---
+
+### 🧠 Visualize ROS 2 Graph
+
+Run this command to generate a visual diagram of how your nodes and topics are connected:
+
+```bash
+rqt_graph
+```
+
+Or use:
+
+```bash
+ros2 run tf2_tools view_frames
+```
+
+This produces an image like the one below that shows your full ROS 2 computation graph.
+
+📷 *(Insert SVG or screenshot of ROS graph visualization here)*
+
+---
+
+### Learn More
+
+* [Official ROS 2 Tutorials](https://docs.ros.org/en/rolling/Tutorials.html)
+* [Docker Curriculum](https://docker-curriculum.com/)
+* [RoboticsBackend ROS 2 Tutorials](https://roboticsbackend.com/)
+
+### Coming Up
+
+* Writing custom messages and services
+* Simulating environments with Gazebo
+* Connecting ROS 2 nodes over a network
+
+---
+
+Congratulations! 🎉 You now know how to:
+
+* Use Docker to run isolated robotics environments
+* Build ROS 2 packages from scratch
+* Launch and test simple nodes
+* Submit your containerized project professionally
 
